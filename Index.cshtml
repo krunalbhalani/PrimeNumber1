@@ -1,0 +1,101 @@
+﻿<header>
+    <div class="content-wrapper">
+        <div class="float-left">
+            <p class="site-title">
+                <a href="~/">ASP.NET Web API</a></p>
+        </div>
+    </div>
+</header>
+<div id="body">
+    <section class="featured">
+        <div class="content-wrapper">
+            <p>
+                <h3>Prime Number Table</h3>
+        
+                
+                Enter Number : <input type="text" name="txtnumber" id="txtnumber" />&nbsp;<span id="errmsg"></span>
+                
+                <br/>
+                <input type="button" id="btnSubmit" value="Submit" onclick="GetPrimeTable(); return false;" />
+          
+
+                <div id="dvPrimeTable"></div>
+                
+            </p>
+        </div>
+    </section>
+    
+</div>
+
+
+<script>
+
+
+    function GetPrimeTable() {
+        jQuery.support.cors = true;
+        var vnumber = $('#txtnumber').val();
+        
+        $.ajax({
+            url: 'http://localhost:49362/api/Values/' + vnumber + '',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+
+                if (data == "wrongnumber") {
+                    $("#dvPrimeTable").html('Number should be greater than 0');
+                } else if (data == "bignumber") {
+                    $("#dvPrimeTable").html('Number should not be greater than 300');
+                } else {
+                    if (data != '') {
+                        WriteResponse(data);
+                    } else {
+                        $("#dvPrimeTable").html('Something is wrong.');
+                    }
+                }
+
+            },
+            error: function (x, y, z) {
+                alert('Error in API call');
+            }
+        });
+    }
+
+
+    function WriteResponse(data) {
+
+        var arr = $.parseJSON(data);
+        
+        if (arr.length > 0) {
+
+            var strResult = "<table id='tblprime'>";
+
+            for (i = 0; i < arr.length; i++) {
+                strResult += "<tr>";
+                for (j = 0; j < arr.length; j++) {
+                    if (i == 0 && j == 0) {
+                        strResult += "<td>&nbsp;</td>";
+                    } else {
+                        strResult += "<td>" + arr[i][j] + "</td>";
+                    }
+                
+                }
+                strResult += "</tr>";
+            }
+            strResult += "</table>";
+            $("#dvPrimeTable").html(strResult);
+        }
+    }
+    
+
+    $(document).ready(function () {
+        $("#txtnumber").keypress(function (e) {
+                if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+                $("#errmsg").html("Digits Only").show().fadeOut("slow");
+                return false;
+                } 
+        });
+    });
+                    
+    
+
+</script>
